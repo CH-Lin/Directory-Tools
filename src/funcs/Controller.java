@@ -22,18 +22,21 @@ import ui.MainUI;
 public class Controller implements ActionListener {
 	private MainUI view;
 	private PrintStream out = null, err = null;
+	private DataNode root;
 
 	public Controller(MainUI view) {
 		this.view = view;
+		root = new DirectoryNode("");
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
-			openDir(view.getDirectory());
+			String dir = view.selectDir(view.getDirectory());
+			openDir(dir);
 		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
 			// if (tabbedPane.getSelectedIndex() == 1)
-			outputDir(view.getDirectory());
+			logDir(view.getDirectory());
 			// else
 			startRemoveDot(view.getSelected());
 		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
@@ -44,37 +47,37 @@ public class Controller implements ActionListener {
 
 	}
 
-	private void openDir(String path) {
-
-		JFileChooser chooser = new JFileChooser(path);
-		chooser.setMultiSelectionEnabled(false);
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		int returnVal = chooser.showOpenDialog(view);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-			view.listDir(chooser.getSelectedFile());
-
-			if (chooser.getSelectedFile().isDirectory()) {
-				view.setDirectory(chooser.getSelectedFile().getAbsolutePath());
-			} else {
-				view.setDirectory(chooser.getSelectedFile().getParent());
-			}
-
-			try {
-				Wini ini = new Wini(new File("config.ini"));
-				ini.put("dict", "currDir", path);
-				ini.store();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+	public void saveConfig(String path) {
+		try {
+			Wini ini = new Wini(new File("config.ini"));
+			ini.put("dict", "currDir", path);
+			ini.store();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	public void outputDir(String path) {
+	private void openDir(String path) {
+		String os = System.getProperty("os.name");
+		System.out.println(os);
+
+		DataNode current = root;
+
+		int index = -1;
+		while ((index = path.indexOf(File.separator)) != -1)
+			if (index == 0) {
+				root.add(new DirectoryNode("/"));
+				path = path.substring(1);
+			} else {
+				path = path.substring(path.indexOf(File.separator));
+			}
+	}
+
+	public void logDir(String path) {
 		setOutput(path);
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(path);
 		DefaultTreeModel model = new DefaultTreeModel(root);
-		new Directory(path, 0, root);
+		new DirectoryLogger(path, 0, root);
 		view.updateList(model);
 		resetOutput();
 	}

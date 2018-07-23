@@ -4,9 +4,9 @@ import java.io.File;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-public class Directory {
+public class DirectoryLogger {
 
-	public Directory(String path, int layer, DefaultMutableTreeNode parent) {
+	public DirectoryLogger(String path, int layer, DefaultMutableTreeNode parent) {
 
 		File f = new File(path);
 		if (f.isDirectory()) {
@@ -23,7 +23,7 @@ public class Directory {
 					DefaultMutableTreeNode node = new DefaultMutableTreeNode(name);
 					parent.add(node);
 					if (f2.isDirectory()) {
-						new Directory(f.getAbsolutePath() + File.separator + file, layer + 1, node);
+						new DirectoryLogger(f.getAbsolutePath() + File.separator + file, layer + 1, node);
 
 					} else {
 						for (int i = 0; i < layer; i++)
