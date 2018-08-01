@@ -4,13 +4,13 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
-
-import funcs.Controller;
 
 public class TopPanel extends JPanel {
 
@@ -26,7 +26,7 @@ public class TopPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public TopPanel(Controller controller) {
+	public TopPanel(ActionListener parent) {
 		setOpaque(false);
 		setLayout(new BorderLayout(0, 0));
 		setBorder(new TitledBorder(new LineBorder(new Color(191, 205, 219), 1, true), "DIRECTORY", TitledBorder.LEADING,
@@ -53,8 +53,8 @@ public class TopPanel extends JPanel {
 		btn_start = new JButton("GO");
 		Panel_Action.add(btn_start, BorderLayout.EAST);
 		btn_start.setOpaque(false);
-		btn_start.addActionListener(controller);
-		btn_dir.addActionListener(controller);
+		btn_start.addActionListener(parent);
+		btn_dir.addActionListener(parent);
 
 	}
 
@@ -63,7 +63,8 @@ public class TopPanel extends JPanel {
 	}
 
 	public void setDirectory(String path) {
-		text_Dir.setText(path);
+		if (path != null)
+			text_Dir.setText(path);
 	}
 
 }

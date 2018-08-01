@@ -2,6 +2,8 @@ package ui;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -21,7 +23,7 @@ import javax.swing.GroupLayout.Alignment;
 import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 
-public class MainUI extends JFrame {
+public class MainUI extends JFrame implements ActionListener {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -66,13 +68,12 @@ public class MainUI extends JFrame {
 	}
 
 	private void addComponent() {
-		Controller controller = new Controller(this);
 		contentPane = new JPanel();
 		contentPane.setOpaque(false);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
 
-		topPanel = new TopPanel(controller);
+		topPanel = new TopPanel(this);
 
 		listdirPanel = new ListdirPanel();
 
@@ -132,7 +133,27 @@ public class MainUI extends JFrame {
 			}
 		}
 
-		topPanel.setDirectory(dir);
+		// topPanel.setDirectory(dir);
+		controller = new Controller();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
+			String dir = selectDir(getDirectory());
+			controller.openDir(dir);
+		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
+			// if (tabbedPane.getSelectedIndex() == 1)
+			updateList(controller.logDir(getDirectory()));
+			// else
+			controller.startRemoveDot(getDirectory(), getSelected());
+			cleanSelected();
+		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
+			addToList();
+		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
+			removeFromList();
+		}
+
 	}
 
 	public String getDirectory() {

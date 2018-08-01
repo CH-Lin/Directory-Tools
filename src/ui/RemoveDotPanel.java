@@ -23,8 +23,6 @@ import javax.swing.ListModel;
 import javax.swing.border.LineBorder;
 import javax.swing.border.TitledBorder;
 
-import funcs.Controller;
-
 public class RemoveDotPanel extends JPanel {
 
 	/**
@@ -43,7 +41,7 @@ public class RemoveDotPanel extends JPanel {
 	/**
 	 * Create the panel.
 	 */
-	public RemoveDotPanel(Controller controller) {
+	public RemoveDotPanel(MainUI parent) {
 		setOpaque(false);
 		setLayout(new BorderLayout(0, 0));
 
@@ -74,11 +72,11 @@ public class RemoveDotPanel extends JPanel {
 
 		btn_sel = new JButton("→");
 		btn_sel.setOpaque(false);
-		btn_sel.addActionListener(controller);
+		btn_sel.addActionListener(parent);
 		Panel_Sel.add(btn_sel);
 
 		btn_rm = new JButton("←");
-		btn_rm.addActionListener(controller);
+		btn_rm.addActionListener(parent);
 		Panel_Sel.add(btn_rm);
 	}
 

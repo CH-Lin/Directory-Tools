@@ -1,7 +1,5 @@
 package funcs;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -10,41 +8,18 @@ import java.io.PrintStream;
 import java.io.UnsupportedEncodingException;
 import java.util.Calendar;
 
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.ini4j.Wini;
 
-import ui.MainUI;
-
-public class Controller implements ActionListener {
-	private MainUI view;
+public class Controller {
 	private PrintStream out = null, err = null;
 	private DataNode root;
 
-	public Controller(MainUI view) {
-		this.view = view;
+	public Controller() {
 		root = new DirectoryNode("");
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
-			String dir = view.selectDir(view.getDirectory());
-			openDir(dir);
-		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
-			// if (tabbedPane.getSelectedIndex() == 1)
-			logDir(view.getDirectory());
-			// else
-			startRemoveDot(view.getSelected());
-		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
-			view.addToList();
-		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
-			view.removeFromList();
-		}
-
 	}
 
 	public void saveConfig(String path) {
@@ -57,7 +32,7 @@ public class Controller implements ActionListener {
 		}
 	}
 
-	private void openDir(String path) {
+	public void openDir(String path) {
 		String os = System.getProperty("os.name");
 		System.out.println(os);
 
@@ -73,17 +48,16 @@ public class Controller implements ActionListener {
 			}
 	}
 
-	public void logDir(String path) {
+	public DefaultTreeModel logDir(String path) {
 		setOutput(path);
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(path);
 		DefaultTreeModel model = new DefaultTreeModel(root);
 		new DirectoryLogger(path, 0, root);
-		view.updateList(model);
 		resetOutput();
+		return model;
 	}
 
-	private void startRemoveDot(String items[]) {
-		String path = view.getDirectory();
+	public void startRemoveDot(String path, String items[]) {
 		String dir = path + System.getProperty("file.separator");
 
 		for (String name : items) {
@@ -95,8 +69,6 @@ public class Controller implements ActionListener {
 				file.renameTo(newfile);
 			}
 		}
-
-		view.cleanSelected();
 	}
 
 	private void setOutput(String start) {
