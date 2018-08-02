@@ -38,6 +38,9 @@ import javax.swing.LayoutStyle.ComponentPlacement;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTree;
+import javax.swing.ScrollPaneConstants;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class MainUI extends JFrame implements ActionListener {
 
@@ -56,8 +59,6 @@ public class MainUI extends JFrame implements ActionListener {
 	private JList<String> list_source;
 
 	private Thread minotor = null;
-
-	private JScrollPane taskScrollPane;
 	private Controller controller;
 
 	/**
@@ -104,7 +105,7 @@ public class MainUI extends JFrame implements ActionListener {
 
 		JPanel taskList = new JPanel();
 
-		taskScrollPane = new JScrollPane(taskList);
+		JScrollPane taskScrollPane = new JScrollPane(taskList);
 
 		fileListScrollPane = new JScrollPane();
 		fileListScrollPane.setViewportBorder(null);
@@ -171,10 +172,17 @@ public class MainUI extends JFrame implements ActionListener {
 		listdirPanel.setOpaque(false);
 		listdirPanel.setLayout(new BorderLayout(0, 0));
 		JScrollPane ScrollPane_List = new JScrollPane();
+		ScrollPane_List.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
 		ScrollPane_List.setBorder(null);
 		listdirPanel.add(ScrollPane_List);
 
 		tree = new JTree(new Vector<String>());
+		tree.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent arg0) {
+				System.out.println(tree.getSelectionPath());
+			}
+		});
 		tree.setEditable(false);
 		ScrollPane_List.setViewportView(tree);
 		listdirPanel.setPreferredSize(new Dimension(100, 300));

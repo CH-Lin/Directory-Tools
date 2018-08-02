@@ -1,5 +1,7 @@
 package funcs;
 
+import java.io.File;
+
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public abstract class DataNode extends DefaultMutableTreeNode {
@@ -10,7 +12,7 @@ public abstract class DataNode extends DefaultMutableTreeNode {
 	public String path = null;
 
 	public DataNode(String path) {
-		super(path);
+		super(path.lastIndexOf(File.separator) == -1 ? path : path.substring(path.lastIndexOf(File.separator) + 1));
 		this.path = path;
 	}
 
