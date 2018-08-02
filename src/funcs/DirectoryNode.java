@@ -11,6 +11,15 @@ public class DirectoryNode extends DataNode {
 
 	public DirectoryNode(String path) {
 		super(path);
+	}
+
+	@Override
+	public boolean isDirectory() {
+		return true;
+	}
+
+	@Override
+	public void expand() {
 		File current = new File(path);
 		if (current.isDirectory()) {
 			String files[] = current.list();
@@ -20,14 +29,12 @@ public class DirectoryNode extends DataNode {
 				File child = new File(name);
 				if (child.isDirectory()) {
 					this.add(new DirectoryNode(current.getAbsolutePath() + File.separator + file));
-				} else {
-					this.add(new FileNode(current.getAbsolutePath() + File.separator + file));
 				}
+				/*
+				 * else { this.add(new FileNode(current.getAbsolutePath() + File.separator +
+				 * file)); }
+				 */
 			}
 		}
-	}
-
-	public boolean hasChildren() {
-		return true;
 	}
 }

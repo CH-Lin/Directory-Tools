@@ -33,19 +33,36 @@ public class Controller {
 	}
 
 	public void openDir(String path) {
-		String os = System.getProperty("os.name");
-		System.out.println(os);
+		// String os = System.getProperty("os.name");
+		// System.out.println(os);
 
 		DataNode current = root;
 
-		int index = -1;
-		while ((index = path.indexOf(File.separator)) != -1)
+		int preIdx = 0, index = -1;
+		while ((index = path.indexOf(File.separator, preIdx)) != -1) {
 			if (index == 0) {
-				root.add(new DirectoryNode("/"));
+				DirectoryNode node = new DirectoryNode(File.separator);
+				node.expand();
+				root.add(node);
 				path = path.substring(1);
 			} else {
-				path = path.substring(path.indexOf(File.separator));
+				String subpath = path.substring(0, index);
+				DirectoryNode node = new DirectoryNode(subpath);
+				node.expand();
+				current.add(node);
+				current = node;
+				// System.out.println(subpath);
+				preIdx = index + 1;
 			}
+		}
+		// System.out.println(path);
+		DirectoryNode n = new DirectoryNode(path);
+		n.expand();
+		current.add(n);
+	}
+
+	public DefaultMutableTreeNode getRoot() {
+		return root;
 	}
 
 	public DefaultTreeModel logDir(String path) {

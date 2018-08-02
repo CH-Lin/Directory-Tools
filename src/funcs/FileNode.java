@@ -11,7 +11,17 @@ public class FileNode extends DataNode {
 		super(path);
 	}
 
-	public boolean hasChildren() {
+	@Override
+	public boolean isDirectory() {
 		return false;
+	}
+
+	@Override
+	public void expand() {
+		// do nothing
+	}
+
+	public void add(DataNode arg0) {
+		// do nothing
 	}
 }

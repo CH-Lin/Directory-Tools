@@ -10,6 +10,7 @@ public abstract class DataNode extends DefaultMutableTreeNode {
 	public String path = null;
 
 	public DataNode(String path) {
+		super(path);
 		this.path = path;
 	}
 
@@ -17,5 +18,7 @@ public abstract class DataNode extends DefaultMutableTreeNode {
 		return path;
 	}
 
-	public abstract boolean hasChildren();
+	public abstract boolean isDirectory();
+
+	public abstract void expand();
 }
