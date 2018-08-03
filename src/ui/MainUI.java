@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreePath;
 
 import java.io.File;
 import java.io.IOException;
@@ -190,8 +191,15 @@ public class MainUI extends JFrame implements ActionListener {
 		});
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent arg0) {
-				System.out.println("mouseClicked" + tree.getSelectionPath());
+			public void mouseClicked(MouseEvent e) {
+				if (SwingUtilities.isRightMouseButton(e)) {
+					int selRow = tree.getRowForLocation(e.getX(), e.getY());
+					TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
+					tree.setSelectionPath(selPath);
+					if (selRow > -1) {
+						tree.setSelectionRow(selRow);
+					}
+				}
 			}
 		});
 		tree.setEditable(false);
