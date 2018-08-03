@@ -41,6 +41,8 @@ import javax.swing.JTree;
 import javax.swing.ScrollPaneConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.event.TreeSelectionEvent;
 
 public class MainUI extends JFrame implements ActionListener {
 
@@ -102,34 +104,43 @@ public class MainUI extends JFrame implements ActionListener {
 		topPanel = new JPanel();
 
 		listdirPanel = new JPanel();
+		listdirPanel.setBorder(new LineBorder(new Color(191, 205, 219), 1, true));
 
 		JPanel taskList = new JPanel();
+		taskList.setBackground(Color.WHITE);
 
 		JScrollPane taskScrollPane = new JScrollPane(taskList);
 
 		fileListScrollPane = new JScrollPane();
 		fileListScrollPane.setViewportBorder(null);
+
+		btn_start = new JButton("GO");
+		btn_start.setOpaque(false);
+		btn_start.addActionListener(this);
 		GroupLayout gl_contentPane = new GroupLayout(contentPane);
-		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
-				.addGroup(gl_contentPane.createSequentialGroup()
-						.addComponent(taskScrollPane, GroupLayout.DEFAULT_SIZE, 968, Short.MAX_VALUE).addGap(6))
-				.addGroup(gl_contentPane.createSequentialGroup().addGroup(gl_contentPane
-						.createParallelGroup(Alignment.TRAILING)
-						.addComponent(topPanel, GroupLayout.DEFAULT_SIZE, 964, Short.MAX_VALUE)
-						.addGroup(Alignment.LEADING, gl_contentPane.createSequentialGroup()
+		gl_contentPane.setHorizontalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPane
+				.createSequentialGroup()
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING)
+						.addGroup(Alignment.TRAILING, gl_contentPane.createSequentialGroup()
 								.addComponent(listdirPanel, GroupLayout.PREFERRED_SIZE, 217, GroupLayout.PREFERRED_SIZE)
 								.addPreferredGap(ComponentPlacement.RELATED)
-								.addComponent(fileListScrollPane, GroupLayout.DEFAULT_SIZE, 741, Short.MAX_VALUE)))
-						.addGap(10)));
+								.addComponent(fileListScrollPane, GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE))
+						.addGroup(Alignment.TRAILING,
+								gl_contentPane.createSequentialGroup()
+										.addComponent(topPanel, GroupLayout.DEFAULT_SIZE, 921, Short.MAX_VALUE)
+										.addPreferredGap(ComponentPlacement.RELATED).addComponent(btn_start))
+						.addComponent(taskScrollPane, GroupLayout.DEFAULT_SIZE, 974, Short.MAX_VALUE))
+				.addGap(0)));
 		gl_contentPane.setVerticalGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addGroup(gl_contentPane
 				.createSequentialGroup()
-				.addComponent(
-						topPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE)
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.LEADING).addComponent(btn_start).addComponent(
+						topPanel, GroupLayout.PREFERRED_SIZE, GroupLayout.DEFAULT_SIZE, GroupLayout.PREFERRED_SIZE))
 				.addPreferredGap(ComponentPlacement.RELATED)
-				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING, false).addComponent(fileListScrollPane)
-						.addComponent(listdirPanel, GroupLayout.DEFAULT_SIZE, 474, Short.MAX_VALUE))
+				.addGroup(gl_contentPane.createParallelGroup(Alignment.TRAILING)
+						.addComponent(fileListScrollPane, GroupLayout.DEFAULT_SIZE, 481, Short.MAX_VALUE)
+						.addComponent(listdirPanel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE))
 				.addPreferredGap(ComponentPlacement.RELATED)
-				.addComponent(taskScrollPane, GroupLayout.DEFAULT_SIZE, 161, Short.MAX_VALUE)));
+				.addComponent(taskScrollPane, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)));
 
 		contentPane.setLayout(gl_contentPane);
 		this.setMinimumSize(new Dimension(1000, 710));
@@ -160,11 +171,6 @@ public class MainUI extends JFrame implements ActionListener {
 		btn_dir.setOpaque(false);
 		btn_dir.setPreferredSize(new Dimension(42, 23));
 		btn_dir.setBorder(null);
-
-		btn_start = new JButton("GO");
-		Panel_Action.add(btn_start, BorderLayout.EAST);
-		btn_start.setOpaque(false);
-		btn_start.addActionListener(this);
 		btn_dir.addActionListener(this);
 	}
 
@@ -177,10 +183,15 @@ public class MainUI extends JFrame implements ActionListener {
 		listdirPanel.add(ScrollPane_List);
 
 		tree = new JTree(new Vector<String>());
+		tree.addTreeSelectionListener(new TreeSelectionListener() {
+			public void valueChanged(TreeSelectionEvent arg0) {
+				System.out.println("valueChanged" + tree.getSelectionPath());
+			}
+		});
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent arg0) {
-				System.out.println(tree.getSelectionPath());
+				System.out.println("mouseClicked" + tree.getSelectionPath());
 			}
 		});
 		tree.setEditable(false);
@@ -194,6 +205,92 @@ public class MainUI extends JFrame implements ActionListener {
 		fileListScrollPane.setViewportView(list_source);
 		fileListScrollPane.setOpaque(false);
 		fileListScrollPane.setBorder(new LineBorder(new Color(191, 205, 219), 1, true));
+	}
+
+	private void setInitialValue() {
+		Wini ini;
+		String dir = null;
+		try {
+			ini = new Wini(new File("config.ini"));
+			dir = ini.get("dict", "currDir");
+		} catch (IOException e1) {
+			File f = new File("config.ini");
+			try {
+				dir = System.getProperty("user.dir");
+				f.createNewFile();
+				Wini ini2 = new Wini(f);
+				ini2.put("dict", "currDir", dir);
+				ini2.store();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		controller = new Controller();
+		setDirectory(dir);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent arg0) {
+		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
+			String dir = selectDir(getDirectory());
+			setDirectory(dir);
+		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
+			// if (tabbedPane.getSelectedIndex() == 1)
+			// updateList(controller.logDir(getDirectory()));
+			// else
+			controller.startRemoveDot(getDirectory(), getSelected());
+			cleanSelected();
+		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
+			addToList();
+		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
+			removeFromList();
+		}
+
+	}
+
+	public String getDirectory() {
+		return text_Dir.getText();
+	}
+
+	public void setDirectory(String path) {
+		if (path != null) {
+			text_Dir.setText(path);
+			updateList(controller.openDir(path));
+			listDir(path);
+			controller.saveConfig(path);
+		}
+	}
+
+	public void updateList(DefaultMutableTreeNode root) {
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		tree.setModel(model);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+	}
+
+	public String selectDir(String path) {
+		JFileChooser chooser = new JFileChooser(path);
+		chooser.setMultiSelectionEnabled(false);
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+		int returnVal = chooser.showOpenDialog(this);
+		if (returnVal == JFileChooser.APPROVE_OPTION) {
+
+			String new_path = null;
+			if (chooser.getSelectedFile().isDirectory()) {
+				new_path = chooser.getSelectedFile().getAbsolutePath();
+			} else {
+				new_path = chooser.getSelectedFile().getParent();
+
+			}
+			return new_path;
+		}
+		return null;
+	}
+
+	public void listDir(String path) {
+		setListData(new File(path));
 	}
 
 	private void setListData(final File f) {
@@ -244,9 +341,11 @@ public class MainUI extends JFrame implements ActionListener {
 							if (!valid) {
 								break;
 							}
+							Thread.sleep(10);
 						}
 					} catch (IOException x) {
 						System.err.println(x);
+					} catch (InterruptedException e) {
 					}
 				}
 			});
@@ -257,92 +356,6 @@ public class MainUI extends JFrame implements ActionListener {
 			String list[] = new String[] { f.getName() };
 			list_source.setListData(list);
 		}
-	}
-
-	private void setInitialValue() {
-		Wini ini;
-		String dir = null;
-		try {
-			ini = new Wini(new File("config.ini"));
-			dir = ini.get("dict", "currDir");
-		} catch (IOException e1) {
-			File f = new File("config.ini");
-			try {
-				dir = System.getProperty("user.dir");
-				f.createNewFile();
-				Wini ini2 = new Wini(f);
-				ini2.put("dict", "currDir", dir);
-				ini2.store();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		setDirectory(dir);
-		controller = new Controller();
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent arg0) {
-		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
-			String dir = selectDir(getDirectory());
-			controller.openDir(dir);
-			updateList(controller.getRoot());
-		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
-			// if (tabbedPane.getSelectedIndex() == 1)
-			// updateList(controller.logDir(getDirectory()));
-			// else
-			controller.startRemoveDot(getDirectory(), getSelected());
-			cleanSelected();
-		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
-			addToList();
-		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
-			removeFromList();
-		}
-
-	}
-
-	public String getDirectory() {
-		return text_Dir.getText();
-	}
-
-	public void setDirectory(String path) {
-		text_Dir.setText(path);
-	}
-
-	public void updateList(DefaultMutableTreeNode root) {
-		DefaultTreeModel model = new DefaultTreeModel(root);
-		tree.setModel(model);
-		for (int i = 0; i < tree.getRowCount(); i++) {
-			tree.expandRow(i);
-		}
-	}
-
-	public String selectDir(String path) {
-		JFileChooser chooser = new JFileChooser(path);
-		chooser.setMultiSelectionEnabled(false);
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		int returnVal = chooser.showOpenDialog(this);
-		if (returnVal == JFileChooser.APPROVE_OPTION) {
-
-			listDir(chooser.getSelectedFile());
-
-			String new_path = null;
-			if (chooser.getSelectedFile().isDirectory()) {
-				new_path = chooser.getSelectedFile().getAbsolutePath();
-			} else {
-				new_path = chooser.getSelectedFile().getParent();
-
-			}
-			setDirectory(new_path);
-			controller.saveConfig(path);
-			return new_path;
-		}
-		return null;
-	}
-
-	public void listDir(final File f) {
-		setListData(f);
 	}
 
 	public void addToList() {

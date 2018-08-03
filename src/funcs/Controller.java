@@ -32,7 +32,7 @@ public class Controller {
 		}
 	}
 
-	public void openDir(String path) {
+	public DefaultMutableTreeNode openDir(String path) {
 		// String os = System.getProperty("os.name");
 		// System.out.println(os);
 
@@ -59,6 +59,7 @@ public class Controller {
 		DirectoryNode n = new DirectoryNode(path);
 		n.expand();
 		current.add(n);
+		return root;
 	}
 
 	public DefaultMutableTreeNode getRoot() {
