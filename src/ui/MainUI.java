@@ -9,7 +9,9 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JFrame;
 import javax.swing.JList;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -57,6 +59,8 @@ public class MainUI extends JFrame implements ActionListener {
 	private JButton btn_dir;
 	private JButton btn_start;
 	private JTextField text_Dir;
+
+	private JPopupMenu popupMenu;
 
 	private JTree tree = null;
 	private JList<String> list_source;
@@ -191,17 +195,25 @@ public class MainUI extends JFrame implements ActionListener {
 		});
 		tree.addMouseListener(new MouseAdapter() {
 			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (SwingUtilities.isRightMouseButton(e)) {
-					int selRow = tree.getRowForLocation(e.getX(), e.getY());
+			public void mouseReleased(MouseEvent e) {
+				int selRow = tree.getRowForLocation(e.getX(), e.getY());
+				if (selRow >= 0) {
 					TreePath selPath = tree.getPathForLocation(e.getX(), e.getY());
 					tree.setSelectionPath(selPath);
 					if (selRow > -1) {
 						tree.setSelectionRow(selRow);
 					}
 				}
+				if (e.isPopupTrigger()) {
+					popupMenu.show(e.getComponent(), e.getX(), e.getY());
+				}
 			}
 		});
+		popupMenu = new JPopupMenu();
+		JMenuItem menuItem = new JMenuItem("Log this");
+		menuItem.addActionListener(this);
+		popupMenu.add(menuItem);
+		tree.add(popupMenu);
 		tree.setEditable(false);
 		ScrollPane_List.setViewportView(tree);
 		listdirPanel.setPreferredSize(new Dimension(100, 300));
