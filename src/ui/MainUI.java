@@ -32,7 +32,10 @@ import java.util.Vector;
 
 import org.ini4j.Wini;
 
+import funcs.Action;
 import funcs.Controller;
+import funcs.LogDirAction;
+
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -45,7 +48,9 @@ import javax.swing.ScrollPaneConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.event.TreeSelectionEvent;
+import javax.swing.JTable;
 
 public class MainUI extends JFrame implements ActionListener {
 
@@ -67,6 +72,7 @@ public class MainUI extends JFrame implements ActionListener {
 
 	private Thread minotor = null;
 	private Controller controller;
+	private DefaultTableModel model;
 
 	/**
 	 * Launch the application.
@@ -111,10 +117,7 @@ public class MainUI extends JFrame implements ActionListener {
 		listdirPanel = new JPanel();
 		listdirPanel.setBorder(new LineBorder(new Color(191, 205, 219), 1, true));
 
-		JPanel taskList = new JPanel();
-		taskList.setBackground(Color.WHITE);
-
-		JScrollPane taskScrollPane = new JScrollPane(taskList);
+		JScrollPane taskScrollPane = new JScrollPane();
 
 		fileListScrollPane = new JScrollPane();
 		fileListScrollPane.setViewportBorder(null);
@@ -146,6 +149,10 @@ public class MainUI extends JFrame implements ActionListener {
 						.addComponent(listdirPanel, Alignment.LEADING, GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE))
 				.addPreferredGap(ComponentPlacement.RELATED)
 				.addComponent(taskScrollPane, GroupLayout.PREFERRED_SIZE, 149, GroupLayout.PREFERRED_SIZE)));
+		Object title[] = new String[] { "Action", "Path", "" };
+		model = new DefaultTableModel(title, 0);
+		JTable taskTable = new JTable(model);
+		taskScrollPane.setViewportView(taskTable);
 
 		contentPane.setLayout(gl_contentPane);
 		this.setMinimumSize(new Dimension(1000, 710));
@@ -204,7 +211,7 @@ public class MainUI extends JFrame implements ActionListener {
 						tree.setSelectionRow(selRow);
 					}
 				}
-				if (e.isPopupTrigger()) {
+				if (e.getButton() == 3 || e.isPopupTrigger()) {
 					popupMenu.show(e.getComponent(), e.getX(), e.getY());
 				}
 			}
@@ -261,8 +268,8 @@ public class MainUI extends JFrame implements ActionListener {
 			// else
 			controller.startRemoveDot(getDirectory(), getSelected());
 			cleanSelected();
-		} else if (arg0.getActionCommand().equalsIgnoreCase("→")) {
-			addToList();
+		} else if (arg0.getActionCommand().equalsIgnoreCase("Log this")) {
+			addToList(new LogDirAction(tree.getSelectionPaths().toString()));
 		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
 			removeFromList();
 		}
@@ -378,8 +385,9 @@ public class MainUI extends JFrame implements ActionListener {
 		}
 	}
 
-	public void addToList() {
-		// Panel_RemoveDot.addToList();
+	public void addToList(Action action) {
+		tree.getSelectionPath();
+		model.addRow(new Object[] { action, action.getPath(), "Column 3" });
 	}
 
 	public void removeFromList() {
