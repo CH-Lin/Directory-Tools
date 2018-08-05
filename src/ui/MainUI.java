@@ -34,6 +34,7 @@ import org.ini4j.Wini;
 
 import funcs.Action;
 import funcs.Controller;
+import funcs.DataNode;
 import funcs.LogDirAction;
 
 import javax.swing.GroupLayout;
@@ -197,7 +198,6 @@ public class MainUI extends JFrame implements ActionListener {
 		tree = new JTree(new Vector<String>());
 		tree.addTreeSelectionListener(new TreeSelectionListener() {
 			public void valueChanged(TreeSelectionEvent arg0) {
-				System.out.println("valueChanged" + tree.getSelectionPath());
 			}
 		});
 		tree.addMouseListener(new MouseAdapter() {
@@ -269,7 +269,8 @@ public class MainUI extends JFrame implements ActionListener {
 			controller.startRemoveDot(getDirectory(), getSelected());
 			cleanSelected();
 		} else if (arg0.getActionCommand().equalsIgnoreCase("Log this")) {
-			addToList(new LogDirAction(tree.getSelectionPaths().toString()));
+			DataNode selectedElement = (DataNode) tree.getSelectionPath().getLastPathComponent();
+			addToList(new LogDirAction(selectedElement.getAbsolutePath()));
 		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
 			removeFromList();
 		}

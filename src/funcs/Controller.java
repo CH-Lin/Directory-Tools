@@ -16,7 +16,7 @@ import org.ini4j.Wini;
 
 public class Controller {
 	private PrintStream out = null, err = null;
-	private DataNode root;
+	private DirectoryNode root;
 
 	public Controller() {
 		root = new DirectoryNode("");
@@ -33,32 +33,23 @@ public class Controller {
 	}
 
 	public DefaultMutableTreeNode openDir(String path) {
-		// String os = System.getProperty("os.name");
-		// System.out.println(os);
-
-		DataNode current = root;
+		DirectoryNode current = root;
+		path += File.separator;
 
 		int preIdx = 0, index = -1;
 		while ((index = path.indexOf(File.separator, preIdx)) != -1) {
-			if (index == 0) {
-				DirectoryNode node = new DirectoryNode(File.separator);
-				node.expand();
-				root.add(node);
-				path = path.substring(1);
-			} else {
-				String subpath = path.substring(0, index);
-				DirectoryNode node = new DirectoryNode(subpath);
-				node.expand();
+			String subpath = path.substring(0, index == 0 ? 1 : index);
+			DirectoryNode node;
+			node = current.getChild(subpath);
+			if (node == null) {
+				node = new DirectoryNode(subpath);
 				current.add(node);
-				current = node;
-				// System.out.println(subpath);
-				preIdx = index + 1;
 			}
+			node.expand();
+			current = node;
+			preIdx = index + 1;
 		}
-		// System.out.println(path);
-		DirectoryNode n = new DirectoryNode(path);
-		n.expand();
-		current.add(n);
+
 		return root;
 	}
 

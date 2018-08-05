@@ -12,7 +12,8 @@ public abstract class DataNode extends DefaultMutableTreeNode {
 	public String path = null;
 
 	public DataNode(String path) {
-		super(path.lastIndexOf(File.separator) == -1 ? path : path.substring(path.lastIndexOf(File.separator) + 1));
+		super((path.lastIndexOf(File.separator) == -1) || (path.length() == 1) ? path
+				: path.substring(path.lastIndexOf(File.separator) + 1));
 		this.path = path;
 	}
 
