@@ -1,4 +1,4 @@
-package funcs;
+package com.files;
 
 public class FileNode extends DataNode {
 
@@ -21,7 +21,13 @@ public class FileNode extends DataNode {
 		// do nothing
 	}
 
+	@Override
+	public DataNode searchChild(String path) {
+		return null;
+	}
+
 	public void add(DataNode arg0) {
 		// do nothing
 	}
+
 }

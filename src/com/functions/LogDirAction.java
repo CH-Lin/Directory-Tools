@@ -1,4 +1,4 @@
-package funcs;
+package com.functions;
 
 public class LogDirAction extends Action {
 

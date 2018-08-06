@@ -1,4 +1,4 @@
-package funcs;
+package com.functions;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -14,11 +14,28 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.ini4j.Wini;
 
-public class Controller {
-	private PrintStream out = null, err = null;
-	private DirectoryNode root;
+import com.files.DataNode;
+import com.files.DirectoryNode;
+import com.files.FileFactory;
 
-	public Controller() {
+public class Controller {
+
+	private static Controller controller;
+
+	private PrintStream out = null, err = null;
+	private DataNode root;
+
+	// Singleton Design Pattern to make sure only one instance of controller exist
+	public static Controller getcontroller() {
+		synchronized (Controller.class) {
+			if (controller == null) {
+				controller = new Controller();
+			}
+		}
+		return controller;
+	}
+
+	private Controller() {
 		root = new DirectoryNode("");
 	}
 
@@ -33,16 +50,16 @@ public class Controller {
 	}
 
 	public DefaultMutableTreeNode openDir(String path) {
-		DirectoryNode current = root;
+		DataNode current = root;
 		path += File.separator;
 
 		int preIdx = 0, index = -1;
 		while ((index = path.indexOf(File.separator, preIdx)) != -1) {
 			String subpath = path.substring(0, index == 0 ? 1 : index);
-			DirectoryNode node;
-			node = current.getChild(subpath);
+			DataNode node;
+			node = current.searchChild(subpath);
 			if (node == null) {
-				node = new DirectoryNode(subpath);
+				node = FileFactory.createFileNode(FileFactory.FileType.Directory, subpath);
 				current.add(node);
 			}
 			node.expand();

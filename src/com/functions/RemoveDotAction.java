@@ -1,4 +1,4 @@
-package funcs;
+package com.functions;
 
 public class RemoveDotAction extends Action {
 

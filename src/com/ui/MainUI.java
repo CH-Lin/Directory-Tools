@@ -1,4 +1,4 @@
-package ui;
+package com.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -32,10 +32,10 @@ import java.util.Vector;
 
 import org.ini4j.Wini;
 
-import funcs.Action;
-import funcs.Controller;
-import funcs.DataNode;
-import funcs.LogDirAction;
+import com.files.DataNode;
+import com.functions.Action;
+import com.functions.Controller;
+import com.functions.LogDirAction;
 
 import javax.swing.GroupLayout;
 import javax.swing.JButton;
@@ -253,7 +253,7 @@ public class MainUI extends JFrame implements ActionListener {
 			}
 		}
 
-		controller = new Controller();
+		controller = Controller.getcontroller();
 		setDirectory(dir);
 	}
 

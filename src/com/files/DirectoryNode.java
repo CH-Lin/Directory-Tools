@@ -1,4 +1,4 @@
-package funcs;
+package com.files;
 
 import java.io.File;
 import java.util.HashMap;;
@@ -10,11 +10,10 @@ public class DirectoryNode extends DataNode {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private HashMap<String, DirectoryNode> map;
+	private HashMap<String, DataNode> searchCatch;
 
 	public DirectoryNode(String path) {
 		super(path);
-		System.out.println("New node: " + path);
 	}
 
 	@Override
@@ -22,26 +21,12 @@ public class DirectoryNode extends DataNode {
 		return true;
 	}
 
-	public DirectoryNode getChild(String path) {
-		if (map == null && this.getChildCount() == 0) {
-			return null;
-		} else if (map == null && this.getChildCount() != 0) {
-			map = new HashMap<>();
-
-			for (int i = 0; i < this.getChildCount(); i++) {
-				DirectoryNode node = (DirectoryNode) this.getChildAt(i);
-				map.put(node.getAbsolutePath(), node);
-			}
-		}
-		return map.get(path);
-	}
-
 	@Override
 	public void expand() {
-		if (map != null)
+		if (searchCatch != null)
 			return;
-		map = new HashMap<>();
-		File current = new File(path);
+		searchCatch = new HashMap<>();
+		File current = new File(this.path);
 		String cuttentPath = current.getAbsolutePath().equalsIgnoreCase(File.separator) ? File.separator
 				: current.getAbsolutePath() + File.separator;
 		if (current.isDirectory()) {
@@ -51,9 +36,9 @@ public class DirectoryNode extends DataNode {
 				String name = cuttentPath + file;
 				File child = new File(name);
 				if (child.isDirectory()) {
-					DirectoryNode node = new DirectoryNode(cuttentPath + file);
+					DataNode node = FileFactory.createFileNode(FileFactory.FileType.Directory, name);
 					this.add(node);
-					map.put(node.getAbsolutePath(), node);
+					searchCatch.put(node.getAbsolutePath(), node);
 				}
 				/*
 				 * else { this.add(new FileNode(current.getAbsolutePath() + File.separator +
@@ -61,5 +46,19 @@ public class DirectoryNode extends DataNode {
 				 */
 			}
 		}
+	}
+
+	public DataNode searchChild(String path) {
+		if (searchCatch == null && this.getChildCount() == 0) {
+			return null;
+		} else if (searchCatch == null && this.getChildCount() != 0) {
+			searchCatch = new HashMap<>();
+
+			for (int i = 0; i < this.getChildCount(); i++) {
+				DirectoryNode node = (DirectoryNode) this.getChildAt(i);
+				searchCatch.put(node.getAbsolutePath(), node);
+			}
+		}
+		return searchCatch.get(path);
 	}
 }
