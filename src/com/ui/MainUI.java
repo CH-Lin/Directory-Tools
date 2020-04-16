@@ -254,48 +254,28 @@ public class MainUI extends JFrame implements ActionListener {
 		}
 
 		controller = Controller.getcontroller();
-		setDirectory(dir);
+		changeDir(dir);
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		if (arg0.getActionCommand().equalsIgnoreCase("...")) {
-			String dir = selectDir(getDirectory());
-			setDirectory(dir);
+			String dir = selectDir(getDir());
+			changeDir(dir);
 		} else if (arg0.getActionCommand().equalsIgnoreCase("Go")) {
 			// if (tabbedPane.getSelectedIndex() == 1)
 			// updateList(controller.logDir(getDirectory()));
 			// else
-			controller.startRemoveDot(getDirectory(), getSelected());
-			cleanSelected();
+			// controller.startRemoveDot(getDirectory(), getSelected());
+			// cleanSelected();
 		} else if (arg0.getActionCommand().equalsIgnoreCase("Log this")) {
 			DataNode selectedElement = (DataNode) tree.getSelectionPath().getLastPathComponent();
-			addToList(new LogDirAction(selectedElement.getAbsolutePath()));
-		} else if (arg0.getActionCommand().equalsIgnoreCase("←")) {
-			removeFromList();
+			addToActionList(new LogDirAction(selectedElement.getAbsolutePath()));
 		}
-
 	}
 
-	public String getDirectory() {
+	public String getDir() {
 		return text_Dir.getText();
-	}
-
-	public void setDirectory(String path) {
-		if (path != null) {
-			text_Dir.setText(path);
-			updateList(controller.openDir(path));
-			listDir(path);
-			controller.saveConfig(path);
-		}
-	}
-
-	public void updateList(DefaultMutableTreeNode root) {
-		DefaultTreeModel model = new DefaultTreeModel(root);
-		tree.setModel(model);
-		for (int i = 0; i < tree.getRowCount(); i++) {
-			tree.expandRow(i);
-		}
 	}
 
 	public String selectDir(String path) {
@@ -317,13 +297,28 @@ public class MainUI extends JFrame implements ActionListener {
 		return null;
 	}
 
+	public void changeDir(String path) {
+		if (path != null) {
+			text_Dir.setText(path);
+			updateList(controller.openDir(path));
+			listDir(path);
+			controller.saveConfig(path);
+		}
+	}
+
+	public void updateList(DefaultMutableTreeNode root) {
+		DefaultTreeModel model = new DefaultTreeModel(root);
+		tree.setModel(model);
+		for (int i = 0; i < tree.getRowCount(); i++) {
+			tree.expandRow(i);
+		}
+	}
+
 	public void listDir(String path) {
 		setListData(new File(path));
 	}
 
 	private void setListData(final File f) {
-		// list_selected.setListData(new String[0]);
-
 		if (f.isDirectory()) {
 			list_source.setListData(f.list());
 
@@ -386,21 +381,9 @@ public class MainUI extends JFrame implements ActionListener {
 		}
 	}
 
-	public void addToList(Action action) {
+	public void addToActionList(Action action) {
 		tree.getSelectionPath();
 		model.addRow(new Object[] { action, action.getPath(), "Column 3" });
-	}
-
-	public void removeFromList() {
-		// Panel_RemoveDot.removeFromList();
-	}
-
-	public String[] getSelected() {
-		return null;// Panel_RemoveDot.getSelected();
-	}
-
-	public void cleanSelected() {
-		// Panel_RemoveDot.clean();
 	}
 
 }
